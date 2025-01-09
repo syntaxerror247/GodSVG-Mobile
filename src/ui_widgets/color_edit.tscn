@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://5f8uxavn1or1"]
+
+[ext_resource type="Script" path="res://src/ui_widgets/color_edit.gd" id="1_1uexr"]
+
+[node name="ColorEdit" type="Control"]
+custom_minimum_size = Vector2(68, 0)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 68.0
+script = ExtResource("1_1uexr")
+button_visuals = false

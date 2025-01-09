@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://carf2o1y7wvmc"]
+
+[ext_resource type="Script" path="res://src/ui_widgets/color_field.gd" id="1_2pe1j"]
+
+[node name="ColorField" type="Control"]
+custom_minimum_size = Vector2(68, 0)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 68.0
+script = ExtResource("1_2pe1j")
+button_visuals = false
+mono_font_tooltip = true

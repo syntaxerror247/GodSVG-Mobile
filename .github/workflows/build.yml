@@ -1,0 +1,150 @@
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  # Which godot version to use for exporting.
+  GODOT_VERSION: 4.3
+  # Which godot release to use for exporting. (stable/rc/beta/alpha)
+  GODOT_RELEASE: stable
+  # Used in the editor config file name. Do not change this for patch releases.
+  GODOT_FEATURE_VERSION: 4.3
+  # Commit hash
+  GODOT_COMMIT_HASH: 77dcf97
+  PROJECT_NAME: GodSVG
+  GODOT_REPO: https://github.com/godotengine/godot.git
+  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes
+
+jobs:
+  format:
+    name: File formatting (file_format.sh)
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install dependencies
+      run: sudo apt-get update -qq && sudo apt-get install -yq --no-install-recommends dos2unix recode
+
+    - name: File formatting checks (file_format.sh)
+      run: bash ./.github/file_format.sh
+
+  build-android:
+    name: Export for Android
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM: "Android"
+    steps:
+      - name: Cache Template
+        id: cache-template
+        uses: actions/cache@v3
+        with:
+          key: template-${{ env.PLATFORM }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_RELEASE }}-${{ env.BUILD_OPTIONS }}
+          path: |
+            ~/.local/share/godot/export_templates/
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Check Installed Android SDK Packages
+        run: |
+          echo "Checking installed Android SDK packages..."
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --list_installed
+
+      - name: Set up Godot Editor
+        run: |
+          mkdir -p ~/godot-editor
+          cd ~/godot-editor
+          wget -q https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip
+          unzip Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip
+          mv ./Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64 ~/godot-editor/godot
+          echo "~/godot-editor" >> $GITHUB_PATH
+
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: sudo apt-get install -y scons python3
+
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
+        name: Clone Godot repository
+        run: git clone $GODOT_REPO godot
+
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
+        name: Checkout specific commit
+        run: |
+          cd godot
+          git fetch
+          git checkout $GODOT_COMMIT_HASH
+
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
+        name: Build Godot template for Android
+        run: |
+          cd godot
+          scons p=android arch=arm64 generate_apk=yes ${BUILD_OPTIONS} target=template_debug
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
+          mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_debug.apk
+          mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
+
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && github.event_name == 'workflow_dispatch' }}
+        name: Build Godot release template for Android
+        run: |
+          cd godot
+          scons p=android arch=arm64 generate_apk=yes ${BUILD_OPTIONS} target=template_release
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
+          mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
+          mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: godsvg
+
+      - name: Export debug project
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: "./godot_only/debug.keystore"
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: "androiddebugkey"
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: "android"
+        run: |
+          cd godsvg
+          mkdir -p build/android
+          godot --headless --export-debug "Android" build/android/GodSVG-debug.apk
+
+      - name: Export release project
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GODOT_ANDROID_KEYSTORE_RELEASE_PATH: "/tmp/release.keystore"
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.KEY_ALIAS }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          cd godsvg
+          mkdir -p build/android
+          echo "${{ secrets.KEYSTORE }}" | base64 -d > /tmp/release.keystore
+          godot --headless --export-release "Android" build/android/GodSVG.apk
+
+      - name: Upload debug artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROJECT_NAME }}.debug.Android
+          path: godsvg/build/android/GodSVG-debug.apk
+          if-no-files-found: error
+          retention-days: 28
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROJECT_NAME }}.release.Android
+          path: godsvg/build/android/GodSVG.apk
+          if-no-files-found: ignore
+          retention-days: 28

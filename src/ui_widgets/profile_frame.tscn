@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://clp287ssgovaa"]
+
+[ext_resource type="Script" path="res://src/ui_widgets/profile_frame.gd" id="1_urnhl"]
+
+[node name="ProfileFrame" type="Control"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+mouse_filter = 1
+script = ExtResource("1_urnhl")

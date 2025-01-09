@@ -1,0 +1,147 @@
+[gd_scene load_steps=8 format=3 uid="uid://mp1nxm8i8tv8"]
+
+[ext_resource type="Script" path="res://src/ui_parts/good_file_dialog.gd" id="1_awdto"]
+[ext_resource type="Script" path="res://src/ui_widgets/BetterLineEdit.gd" id="2_52puw"]
+[ext_resource type="Texture2D" uid="uid://rrhdja8l17cn" path="res://visual/icons/FolderUp.svg" id="2_i2mtk"]
+[ext_resource type="Texture2D" uid="uid://cvh3kwbucf2n1" path="res://visual/icons/Reload.svg" id="4_udwbh"]
+[ext_resource type="Texture2D" uid="uid://kkxyv1gyrjgj" path="res://visual/icons/Visuals.svg" id="5_2ggtv"]
+[ext_resource type="Texture2D" uid="uid://d4c7haflm8evm" path="res://visual/icons/Search.svg" id="6_otods"]
+[ext_resource type="FontFile" uid="uid://clpf84p1lfwlp" path="res://visual/fonts/Font.ttf" id="7_eeq17"]
+
+[node name="GoodFileDialog" type="PanelContainer"]
+offset_right = 684.0
+offset_bottom = 386.0
+theme_type_variation = &"OverlayPanel"
+script = ExtResource("1_awdto")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="TopBar" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="FolderUpButton" type="Button" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"IconButton"
+icon = ExtResource("2_i2mtk")
+
+[node name="PathLabel" type="Label" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+
+[node name="PathField" type="LineEdit" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_52puw")
+
+[node name="RefreshButton" type="Button" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"IconButton"
+icon = ExtResource("4_udwbh")
+
+[node name="ShowHiddenButton" type="Button" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"IconButton"
+toggle_mode = true
+icon = ExtResource("5_2ggtv")
+
+[node name="SearchButton" type="Button" parent="VBoxContainer/TopBar"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"IconButton"
+toggle_mode = true
+icon = ExtResource("6_otods")
+
+[node name="MainContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="DrivesContainer" type="PanelContainer" parent="VBoxContainer/MainContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DrivesList" type="ItemList" parent="VBoxContainer/MainContainer/DrivesContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+fixed_icon_size = Vector2i(16, 16)
+
+[node name="FilePicker" type="VBoxContainer" parent="VBoxContainer/MainContainer"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+
+[node name="SearchField" type="LineEdit" parent="VBoxContainer/MainContainer/FilePicker"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_eeq17")
+script = ExtResource("2_52puw")
+
+[node name="VisualPicker" type="PanelContainer" parent="VBoxContainer/MainContainer/FilePicker"]
+custom_minimum_size = Vector2(450, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FileList" type="ItemList" parent="VBoxContainer/MainContainer/FilePicker/VisualPicker"]
+unique_name_in_owner = true
+layout_mode = 2
+allow_rmb_select = true
+fixed_icon_size = Vector2i(16, 16)
+
+[node name="FileContainer" type="HBoxContainer" parent="VBoxContainer/MainContainer/FilePicker"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="FileField" type="LineEdit" parent="VBoxContainer/MainContainer/FilePicker/FileContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_52puw")
+
+[node name="ExtensionPanel" type="PanelContainer" parent="VBoxContainer/MainContainer/FilePicker/FileContainer"]
+layout_mode = 2
+theme_type_variation = &"DarkPanel"
+
+[node name="ExtensionLabel" type="Label" parent="VBoxContainer/MainContainer/FilePicker/FileContainer/ExtensionPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.866667, 0.933333, 1, 0.533333)
+
+[node name="ButtonContainer" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="CloseButton" type="Button" parent="VBoxContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+focus_mode = 0
+mouse_default_cursor_shape = 2
+
+[node name="SpecialButton" type="Button" parent="VBoxContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+focus_mode = 0
+mouse_default_cursor_shape = 2
+
+[connection signal="pressed" from="VBoxContainer/TopBar/FolderUpButton" to="." method="_on_folder_up_button_pressed"]
+[connection signal="text_submitted" from="VBoxContainer/TopBar/PathField" to="." method="_on_path_field_text_submitted"]
+[connection signal="toggled" from="VBoxContainer/TopBar/ShowHiddenButton" to="." method="_on_show_hidden_button_toggled"]
+[connection signal="toggled" from="VBoxContainer/TopBar/SearchButton" to="." method="_on_search_button_toggled"]
+[connection signal="item_selected" from="VBoxContainer/MainContainer/DrivesContainer/DrivesList" to="." method="_on_drives_list_item_selected"]
+[connection signal="text_change_canceled" from="VBoxContainer/MainContainer/FilePicker/SearchField" to="." method="_on_search_field_text_change_canceled"]
+[connection signal="text_changed" from="VBoxContainer/MainContainer/FilePicker/SearchField" to="." method="_on_search_field_text_changed"]
+[connection signal="empty_clicked" from="VBoxContainer/MainContainer/FilePicker/VisualPicker/FileList" to="." method="_on_file_list_empty_clicked"]
+[connection signal="item_activated" from="VBoxContainer/MainContainer/FilePicker/VisualPicker/FileList" to="." method="_on_file_list_item_activated"]
+[connection signal="item_clicked" from="VBoxContainer/MainContainer/FilePicker/VisualPicker/FileList" to="." method="_on_file_list_item_clicked"]
+[connection signal="item_selected" from="VBoxContainer/MainContainer/FilePicker/VisualPicker/FileList" to="." method="_on_file_list_item_selected"]
+[connection signal="text_change_canceled" from="VBoxContainer/MainContainer/FilePicker/FileContainer/FileField" to="." method="_on_file_field_text_change_canceled"]
+[connection signal="text_changed" from="VBoxContainer/MainContainer/FilePicker/FileContainer/FileField" to="." method="_on_file_field_text_changed"]
+[connection signal="text_submitted" from="VBoxContainer/MainContainer/FilePicker/FileContainer/FileField" to="." method="_on_file_field_text_submitted"]
