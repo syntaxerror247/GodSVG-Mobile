@@ -32,12 +32,18 @@ msgid "Check for updates?"
 msgstr "Провери за ъпдейти?"
 
 #: src/autoload/HandlerGUI.gd
-msgid "This requires GodSVG to connect to the internet."
-msgstr "Това изисква GodSVG да се свърже с интерната."
+msgid ""
+"This will connect to github.com to compare version numbers. No other data is "
+"collected or transmitted."
+msgstr "Това ще се свърже с github.com за да сравни числата на версиите. Не се събират или изпращат никакви други данни."
 
 #: src/autoload/HandlerGUI.gd src/ui_widgets/alert_dialog.gd
 msgid "OK"
 msgstr "Добре"
+
+#: src/autoload/HandlerGUI.gd
+msgid "Do you want to proceed?"
+msgstr "Искаш ли да продължиш?"
 
 #: src/autoload/HandlerGUI.gd
 msgid "Export SVG"
@@ -50,11 +56,16 @@ msgstr "Експортирай"
 
 #: src/autoload/HandlerGUI.gd
 msgid ""
-"The graphic can only be exported as SVG because its size is not defined. Do "
-"you want to proceed?"
+"The graphic can be exported only as SVG because its dimensions are too "
+"different in magnitude."
 msgstr ""
-"Графиката може да бъде експортирана само като SVG защото размерът не е "
-"определен. Искаш ли да продължиш?"
+"Графиката може да бъде експортирана само като SVG защото широчината и височината са твърде различни."
+
+#: src/autoload/HandlerGUI.gd
+msgid ""
+"The graphic can be exported only as SVG because its size is not defined."
+msgstr ""
+"Графиката може да бъде експортирана само като SVG защото размерът не е определен."
 
 #: src/autoload/State.gd src/ui_parts/good_file_dialog.gd
 #: src/ui_widgets/alert_dialog.gd
@@ -145,6 +156,10 @@ msgstr "Хекс с 3 или 6 цифри"
 #: src/config_classes/Formatter.gd
 msgid "6-digit hex"
 msgstr "Хекс с 6 цифри"
+
+#: src/config_classes/TabData.gd
+msgid "Empty"
+msgstr "Празен"
 
 #: src/config_classes/TabData.gd
 msgid "Unsaved"
@@ -1050,8 +1065,7 @@ msgstr "Импортираният файл вече се редактира в 
 #: src/utils/FileUtils.gd
 msgid "If you want to apply the unsaved file state, use \"Reset SVG\" instead."
 msgstr ""
-"Ако искаш да приложиш незаписаното състояние на файла, използвай \"Reset "
-"SVG\"."
+"Ако искаш да приложиш незаписаното състояние на файла, използвай \"Рестартирай SVG-то\"."
 
 #: src/utils/TranslationUtils.gd
 msgid "Select the next tab"

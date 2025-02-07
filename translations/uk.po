@@ -32,12 +32,19 @@ msgid "Check for updates?"
 msgstr "Перевірити оновлення?"
 
 #: src/autoload/HandlerGUI.gd
-msgid "This requires GodSVG to connect to the internet."
-msgstr "Ця опція потребує інтернет-з'єднання."
+msgid ""
+"This will connect to github.com to compare version numbers. No other data is "
+"collected or transmitted."
+msgstr ""
 
 #: src/autoload/HandlerGUI.gd src/ui_widgets/alert_dialog.gd
 msgid "OK"
 msgstr "Добре"
+
+#: src/autoload/HandlerGUI.gd
+#, fuzzy
+msgid "Do you want to proceed?"
+msgstr "Ви дійсно бажаєте вийти із GodSVG?"
 
 #: src/autoload/HandlerGUI.gd
 msgid "Export SVG"
@@ -49,9 +56,18 @@ msgid "Export"
 msgstr "Експортувати"
 
 #: src/autoload/HandlerGUI.gd
+#, fuzzy
 msgid ""
-"The graphic can only be exported as SVG because its size is not defined. Do "
-"you want to proceed?"
+"The graphic can be exported only as SVG because its dimensions are too "
+"different in magnitude."
+msgstr ""
+"Зображення можна експортувати тільки як SVG, оскільки його розміри не "
+"задані. Бажаєте продовжити?"
+
+#: src/autoload/HandlerGUI.gd
+#, fuzzy
+msgid ""
+"The graphic can be exported only as SVG because its size is not defined."
 msgstr ""
 "Зображення можна експортувати тільки як SVG, оскільки його розміри не "
 "задані. Бажаєте продовжити?"
@@ -144,6 +160,10 @@ msgstr "3 або 6 значне шістнадцятирічне число"
 #: src/config_classes/Formatter.gd
 msgid "6-digit hex"
 msgstr "6 значне шістнадцятирічне число"
+
+#: src/config_classes/TabData.gd
+msgid "Empty"
+msgstr ""
 
 #: src/config_classes/TabData.gd
 msgid "Unsaved"
@@ -1206,6 +1226,9 @@ msgstr ""
 #: src/utils/TranslationUtils.gd
 msgid "The file extension is empty. Only {extension_list} files are supported."
 msgstr "Розширення файлу порожнє. Тільки {extension_list} файли підтримуються."
+
+#~ msgid "This requires GodSVG to connect to the internet."
+#~ msgstr "Ця опція потребує інтернет-з'єднання."
 
 #, fuzzy
 #~ msgid "Add new tab"
