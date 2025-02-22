@@ -251,6 +251,27 @@ msgstr "Donateurs Or"
 msgid "Diamond donors"
 msgstr "Donateurs Diamant"
 
+#: src/ui_parts/current_file_button.gd src/ui_parts/good_file_dialog.gd
+msgid "Save SVG"
+msgstr "Sauvegarder le SVG"
+
+#: src/ui_parts/current_file_button.gd
+#, fuzzy
+msgid "Save SVG as…"
+msgstr "Sauvegarder le SVG"
+
+#: src/ui_parts/current_file_button.gd src/utils/TranslationUtils.gd
+msgid "Reset SVG"
+msgstr "Rénitialiser le SVG"
+
+#: src/ui_parts/current_file_button.gd src/ui_parts/tab_bar.gd
+msgid "Open externally"
+msgstr ""
+
+#: src/ui_parts/current_file_button.gd src/ui_parts/tab_bar.gd
+msgid "Show in File Manager"
+msgstr ""
+
 #: src/ui_parts/display.gd
 msgid "Visuals"
 msgstr "Visuels"
@@ -345,22 +366,6 @@ msgstr "Paramètres"
 #: src/ui_parts/global_actions.gd src/utils/TranslationUtils.gd
 msgid "Optimize"
 msgstr "Optimiser"
-
-#: src/ui_parts/global_actions.gd src/ui_parts/good_file_dialog.gd
-msgid "Save SVG"
-msgstr "Sauvegarder le SVG"
-
-#: src/ui_parts/global_actions.gd src/utils/TranslationUtils.gd
-msgid "Reset SVG"
-msgstr "Rénitialiser le SVG"
-
-#: src/ui_parts/global_actions.gd src/ui_parts/tab_bar.gd
-msgid "Open externally"
-msgstr ""
-
-#: src/ui_parts/global_actions.gd src/ui_parts/tab_bar.gd
-msgid "Show in File Manager"
-msgstr ""
 
 #: src/ui_parts/global_actions.gd
 msgid "About…"
@@ -639,8 +644,9 @@ msgid "UI scale"
 msgstr "Échelle de l'interface"
 
 #: src/ui_parts/settings_menu.gd
-msgid "Auto UI scale"
-msgstr "Échelle de l'interface automatique"
+#, fuzzy
+msgid "Changes the scale factor for the interface."
+msgstr "Change l'échelle de l'interface utilisateur visuelle."
 
 #: src/ui_parts/settings_menu.gd
 msgid "Language"
@@ -650,7 +656,7 @@ msgstr "Langue"
 msgid "Import XML"
 msgstr "Importer un fichier XML"
 
-#: src/ui_parts/settings_menu.gd src/ui_widgets/palette_config.gd
+#: src/ui_parts/settings_menu.gd
 msgid "Paste XML"
 msgstr "Coller du XML"
 
@@ -809,15 +815,20 @@ msgstr ""
 msgid "Changes the visual size and grabbing area of handles."
 msgstr "Change la taille visuelle et la zone de saisie des poignées"
 
-#: src/ui_parts/settings_menu.gd
+#: src/ui_parts/shortcut_panel.gd
 #, fuzzy
-msgid "Changes the scale factor for the interface."
-msgstr "Change l'échelle de l'interface utilisateur visuelle."
+msgid "Horizontal strip"
+msgstr "Ligne horizontale vers"
 
-#: src/ui_parts/settings_menu.gd
+#: src/ui_parts/shortcut_panel.gd
 #, fuzzy
-msgid "Scales the interface automatically based on the screen size."
-msgstr "Redimensionne l'interface utilisateur selon la taille de l'écran."
+msgid "Vertical strip"
+msgstr "Ligne verticale vers"
+
+#: src/ui_parts/shortcut_panel.gd
+#, fuzzy
+msgid "Horizontal with two rows"
+msgstr "Ligne horizontale vers"
 
 #: src/ui_parts/shortcut_panel_config.gd
 msgid "Configure Shortcut Panel"
@@ -826,21 +837,6 @@ msgstr ""
 #: src/ui_parts/shortcut_panel_config.gd
 msgid "Layout"
 msgstr ""
-
-#: src/ui_parts/shortcut_panel_config.gd
-#, fuzzy
-msgid "Horizontal strip"
-msgstr "Ligne horizontale vers"
-
-#: src/ui_parts/shortcut_panel_config.gd
-#, fuzzy
-msgid "Horizontal with two rows"
-msgstr "Ligne horizontale vers"
-
-#: src/ui_parts/shortcut_panel_config.gd
-#, fuzzy
-msgid "Vertical strip"
-msgstr "Ligne verticale vers"
 
 #: src/ui_parts/tab_bar.gd
 #, fuzzy
@@ -993,12 +989,17 @@ msgid "Rename"
 msgstr "Renommer"
 
 #: src/ui_widgets/palette_config.gd
+msgid "Apply Preset"
+msgstr "Appliquer le préréglage"
+
+#: src/ui_widgets/palette_config.gd
 msgid "Copy as XML"
 msgstr "Copier en tant que XML"
 
 #: src/ui_widgets/palette_config.gd
-msgid "Apply Preset"
-msgstr "Appliquer le préréglage"
+#, fuzzy
+msgid "Save as XML"
+msgstr "Copier en tant que XML"
 
 #: src/ui_widgets/path_popup.gd src/ui_widgets/pathdata_field.gd
 #: src/utils/TranslationUtils.gd
@@ -1084,6 +1085,11 @@ msgstr ""
 #: src/utils/FileUtils.gd
 msgid "If you want to apply the unsaved file state, use \"Reset SVG\" instead."
 msgstr ""
+
+#: src/utils/TranslationUtils.gd
+#, fuzzy
+msgid "Save as"
+msgstr "Enregistrer"
 
 #: src/utils/TranslationUtils.gd
 msgid "Select the next tab"
@@ -1227,6 +1233,13 @@ msgid "The file extension is empty. Only {extension_list} files are supported."
 msgstr ""
 "L'extension de fichier est vide. Seuls les fichiers {extension_list} sont "
 "supportés."
+
+#~ msgid "Auto UI scale"
+#~ msgstr "Échelle de l'interface automatique"
+
+#, fuzzy
+#~ msgid "Scales the interface automatically based on the screen size."
+#~ msgstr "Redimensionne l'interface utilisateur selon la taille de l'écran."
 
 #~ msgid "Wrap mouse"
 #~ msgstr ""
