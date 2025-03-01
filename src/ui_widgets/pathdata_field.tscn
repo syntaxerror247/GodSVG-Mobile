@@ -100,7 +100,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="PathdataField" type="VBoxContainer"]
-offset_right = 358.0
+offset_right = 250.0
 offset_bottom = 45.0
 theme_override_constants/separation = 2
 script = ExtResource("1_22rk2")
@@ -112,7 +112,7 @@ relative_button_hovered = SubResource("StyleBoxFlat_7fw87")
 relative_button_pressed = SubResource("StyleBoxFlat_l7drx")
 
 [node name="LineEdit" type="LineEdit" parent="."]
-custom_minimum_size = Vector2(358, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 focus_mode = 1
@@ -120,6 +120,6 @@ script = ExtResource("2_48xgh")
 mono_font_tooltip = true
 
 [node name="Commands" type="Control" parent="."]
-custom_minimum_size = Vector2(344, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_horizontal = 8

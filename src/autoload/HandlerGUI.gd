@@ -308,7 +308,7 @@ func update_ui_scale() -> void:
 	var window := get_window()
 	if not window.is_node_ready():
 		await window.ready
-	if Configs.savedata.auto_ui_scale:
+	if Configs.savedata.ui_scale == SaveData.ScalingApproach.AUTO:
 		window.content_scale_factor = _calculate_auto_scale()
 	else:
 		var final_scale := minf(Configs.savedata.ui_scale, 4.0)

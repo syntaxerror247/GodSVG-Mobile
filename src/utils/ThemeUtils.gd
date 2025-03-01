@@ -773,8 +773,8 @@ static func _setup_scrollbar(theme: Theme) -> void:
 	
 	var h_scroll_stylebox := StyleBoxFlat.new()
 	h_scroll_stylebox.set_corner_radius_all(3)
-	h_scroll_stylebox.content_margin_top = 4
-	h_scroll_stylebox.content_margin_bottom = 4
+	h_scroll_stylebox.content_margin_top = 6
+	h_scroll_stylebox.content_margin_bottom = 6
 	h_scroll_stylebox.bg_color = scrollbar_background_color
 	theme.set_stylebox("scroll", "HScrollBar", h_scroll_stylebox)
 	
@@ -798,8 +798,8 @@ static func _setup_scrollbar(theme: Theme) -> void:
 	
 	var v_scroll_stylebox := StyleBoxFlat.new()
 	v_scroll_stylebox.set_corner_radius_all(3)
-	v_scroll_stylebox.content_margin_left = 4.0
-	v_scroll_stylebox.content_margin_right = 4.0
+	v_scroll_stylebox.content_margin_left = 6
+	v_scroll_stylebox.content_margin_right = 6
 	v_scroll_stylebox.bg_color = scrollbar_background_color
 	theme.set_stylebox("scroll", "VScrollBar", v_scroll_stylebox)
 
