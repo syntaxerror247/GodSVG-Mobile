@@ -30,6 +30,8 @@ signal active_tab_changed
 @warning_ignore("unused_signal")
 signal tabs_changed
 @warning_ignore("unused_signal")
+signal tab_removed
+@warning_ignore("unused_signal")
 signal layout_changed
 
 const savedata_path = "user://savedata.tres"

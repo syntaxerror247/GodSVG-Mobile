@@ -8,11 +8,11 @@
 [ext_resource type="PackedScene" uid="uid://dad7fkhmsooc6" path="res://src/ui_widgets/number_edit.tscn" id="7_wrrfr"]
 [ext_resource type="PackedScene" uid="uid://oltvrf01xrxl" path="res://src/ui_widgets/zoom_menu.tscn" id="8_xtdmn"]
 [ext_resource type="Script" uid="uid://b6pmlbnl76wmm" path="res://src/ui_parts/viewport.gd" id="9_4xrk7"]
-[ext_resource type="Script" uid="uid://rqrxhe8wa6fn" path="res://src/ui_parts/tab_bar.gd" id="9_rll1m"]
 [ext_resource type="Shader" uid="uid://i2y5pyhcgra2" path="res://src/shaders/zoom_shader.gdshader" id="10_x7ybk"]
 [ext_resource type="Texture2D" uid="uid://c68og6bsqt0lb" path="res://assets/icons/backgrounds/Checkerboard.svg" id="11_1bm1s"]
 [ext_resource type="Script" uid="uid://dtplje5mhdmrj" path="res://src/ui_parts/display_texture.gd" id="12_qi23s"]
 [ext_resource type="Script" uid="uid://csqewpxr21ywy" path="res://src/ui_parts/handles_manager.gd" id="13_lwhwy"]
+[ext_resource type="Texture2D" uid="uid://8x628rb2bnep" path="res://assets/icons/TabSwitcher.svg" id="14_ryr8t"]
 [ext_resource type="Script" uid="uid://cm5033meho5vr" path="res://src/ui_widgets/camera.gd" id="15_hevpa"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kqplg"]
@@ -33,13 +33,6 @@ grow_vertical = 2
 theme_override_constants/separation = 0
 script = ExtResource("1_oib5g")
 
-[node name="TabBar" type="Control" parent="."]
-clip_contents = true
-custom_minimum_size = Vector2(0, 24)
-layout_mode = 2
-size_flags_horizontal = 3
-script = ExtResource("9_rll1m")
-
 [node name="ViewportPanel" type="PanelContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
@@ -58,7 +51,7 @@ unique_name_in_owner = true
 disable_3d = true
 handle_input_locally = false
 gui_snap_controls_to_pixels = false
-size = Vector2i(720, 1225)
+size = Vector2i(720, 1249)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 script = ExtResource("9_4xrk7")
@@ -111,7 +104,6 @@ alignment = 2
 [node name="LeftMenu" type="HBoxContainer" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 2
 theme_override_constants/separation = 5
 
 [node name="Visuals" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu"]
@@ -155,6 +147,22 @@ max_length = 20
 min_value = 0.001
 allow_lower = false
 
+[node name="spacer" type="Control" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TabSwitcher" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions"]
+layout_mode = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_type_variation = &"IconButton"
+icon = ExtResource("14_ryr8t")
+icon_alignment = 1
+
+[node name="spacer2" type="Control" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="ZoomMenu" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions" instance=ExtResource("8_xtdmn")]
 unique_name_in_owner = true
 layout_mode = 2
@@ -197,5 +205,6 @@ horizontal_alignment = 2
 [connection signal="pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Reference" to="." method="_on_reference_pressed"]
 [connection signal="toggled" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Snapping/SnapButton" to="." method="_on_snap_button_toggled"]
 [connection signal="value_changed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Snapping/SnapNumberEdit" to="." method="_on_snap_number_edit_value_changed"]
+[connection signal="pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/TabSwitcher" to="." method="_on_tab_switcher_pressed"]
 [connection signal="zoom_changed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/ZoomMenu" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="_on_zoom_changed"]
 [connection signal="zoom_reset_pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/ZoomMenu" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="center_frame"]

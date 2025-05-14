@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://bhq4xikyvksum"]
+
+[ext_resource type="Script" uid="uid://d3lam2u4n2evi" path="res://src/ui_widgets/tab_item.gd" id="1_aprl0"]
+[ext_resource type="Texture2D" uid="uid://b0y4h5tuyrais" path="res://assets/icons/Close.svg" id="2_1qxce"]
+
+[node name="TabItem" type="PanelContainer"]
+custom_minimum_size = Vector2(120, 160)
+size_flags_horizontal = 6
+script = ExtResource("1_aprl0")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="title" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="close" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+icon = ExtResource("2_1qxce")
+flat = true
+
+[node name="path" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/close" to="." method="_on_close_pressed"]

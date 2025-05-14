@@ -726,6 +726,7 @@ func remove_tab(idx: int) -> void:
 		_add_new_tab()
 	
 	emit_changed()
+	Configs.tab_removed.emit()
 	Configs.tabs_changed.emit()
 	var has_tab_changed := (_active_tab_index == idx)
 	_active_tab_index = clampi(new_active_tab_index, 0, _tabs.size() - 1)

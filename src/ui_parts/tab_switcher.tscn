@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3 uid="uid://csrfbf30rdcc0"]
+
+[ext_resource type="Script" uid="uid://rwf3r3qie2mv" path="res://src/ui_parts/tab_switcher.gd" id="1_qdc8p"]
+[ext_resource type="Texture2D" uid="uid://eif2ioi0mw17" path="res://assets/icons/Plus.svg" id="2_oftom"]
+
+[node name="TabSwitcher" type="PanelContainer"]
+custom_minimum_size = Vector2(200, 0)
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 96.0
+grow_vertical = 2
+script = ExtResource("1_qdc8p")
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer3"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer3/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="NewTab" type="Button" parent="VBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_type_variation = &"IconButton"
+text = "New Tab"
+icon = ExtResource("2_oftom")
+
+[connection signal="pressed" from="VBoxContainer3/NewTab" to="." method="_on_new_tab_pressed"]

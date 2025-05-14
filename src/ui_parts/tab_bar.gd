@@ -426,7 +426,9 @@ func _make_custom_tooltip(for_text: String) -> Object:
 		return null
 	
 	var current_tab := Configs.savedata.get_tab(get_hovered_index())
-	var is_saved := not current_tab.svg_file_path.is_empty()
+	var is_saved := false
+	if current_tab:
+		is_saved = not current_tab.svg_file_path.is_empty()
 	
 	var path := for_text.left(asterisk_pos)
 	var label := Label.new()

@@ -1,6 +1,7 @@
 extends VBoxContainer
 
 const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
+const TabSwitcher = preload("res://src/ui_parts/tab_switcher.tscn")
 
 @onready var viewport: SubViewport = %Viewport
 @onready var reference_texture: TextureRect = %Viewport/ReferenceTexture
@@ -13,6 +14,8 @@ const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
 @onready var debug_label: Label = %DebugContainer/DebugLabel
 @onready var input_debug_label: Label = %DebugContainer/InputDebugLabel
 @onready var toolbar: PanelContainer = $ViewportPanel/VBoxContainer/Toolbar
+
+var tab_switcher: PanelContainer
 
 var reference_overlay := false
 
@@ -33,7 +36,14 @@ func _ready() -> void:
 	update_theme()
 	update_snap_config()
 	get_window().window_input.connect(_update_input_debug)
-
+	
+	tab_switcher = TabSwitcher.instantiate()
+	var overlay_ref := ColorRect.new()
+	overlay_ref.color = Color(0, 0, 0, 0.4)
+	overlay_ref.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay_ref.hide()
+	get_tree().root.add_child.call_deferred(overlay_ref)
+	overlay_ref.add_child(tab_switcher)
 
 func update_translations() -> void:
 	%LeftMenu/Visuals.tooltip_text = Translator.translate("Visuals")
@@ -159,3 +169,9 @@ func _update_input_debug(event: InputEvent) -> void:
 			new_text = new_text.right(-new_text.find("\n") - 1)
 		new_text += event_text + "\n"
 		input_debug_label.text = new_text
+
+
+func _on_tab_switcher_pressed() -> void:
+	tab_switcher.refresh_tabs()
+	tab_switcher.get_parent().show()
+	tab_switcher.animate_in()
