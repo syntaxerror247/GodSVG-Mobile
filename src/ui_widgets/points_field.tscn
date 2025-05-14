@@ -4,13 +4,13 @@
 [ext_resource type="Script" uid="uid://1hox6gd5pxku" path="res://src/ui_widgets/BetterLineEdit.gd" id="2_4uivs"]
 
 [node name="PointsField" type="VBoxContainer"]
-offset_right = 358.0
+offset_right = 300.0
 offset_bottom = 45.0
 theme_override_constants/separation = 2
 script = ExtResource("1_pnk5w")
 
 [node name="LineEdit" type="LineEdit" parent="."]
-custom_minimum_size = Vector2(358, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 focus_mode = 1
@@ -18,6 +18,6 @@ script = ExtResource("2_4uivs")
 mono_font_tooltip = true
 
 [node name="Points" type="Control" parent="."]
-custom_minimum_size = Vector2(344, 0)
+custom_minimum_size = Vector2(295, 0)
 layout_mode = 2
 size_flags_horizontal = 8

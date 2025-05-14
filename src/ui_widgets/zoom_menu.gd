@@ -6,9 +6,9 @@ const MAX_ZOOM = 512.0
 signal zoom_changed(zoom_level: float, offset: Vector2)
 signal zoom_reset_pressed
 
-@onready var zoom_out_button: BetterButton = $ZoomOut
-@onready var zoom_in_button: BetterButton = $ZoomIn
-@onready var zoom_reset_button: BetterButton = $ZoomReset
+@onready var zoom_out_button: Button = $ZoomOut
+@onready var zoom_in_button: Button = $ZoomIn
+@onready var zoom_reset_button: Button = $ZoomReset
 
 var _zoom_level: float
 
@@ -71,3 +71,15 @@ func update_buttons_appearance() -> void:
 	zoom_out_button.disabled = is_min_zoom
 	zoom_out_button.mouse_default_cursor_shape = Control.CURSOR_ARROW if\
 			is_min_zoom else Control.CURSOR_POINTING_HAND
+
+
+func _on_zoom_out_pressed() -> void:
+	HandlerGUI.throw_action_event("zoom_out")
+
+
+func _on_zoom_reset_pressed() -> void:
+	HandlerGUI.throw_action_event("zoom_reset")
+
+
+func _on_zoom_in_pressed() -> void:
+	HandlerGUI.throw_action_event("zoom_in")
