@@ -57,7 +57,9 @@ func _on_button_pressed() -> void:
 				set_value.bind(val), disabled_values.has(val) or val == _value))
 	
 	var value_picker := ContextPopup.new()
-	value_picker.setup(btn_arr, align_left, size.x, get_window().size.y / 2.0)
+	var max_height = get_window().size.y / (get_tree().root.content_scale_factor * 2.0)
+	print(max_height)
+	value_picker.setup(btn_arr, align_left, size.x, max_height)
 	HandlerGUI.popup_under_rect(value_picker, line_edit.get_global_rect(), get_viewport())
 
 

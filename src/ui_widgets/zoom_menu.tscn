@@ -14,7 +14,6 @@ script = ExtResource("1_18ab8")
 layout_mode = 2
 focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_type_variation = &"IconButton"
 icon = ExtResource("1_8ggy2")
 icon_alignment = 1
 
@@ -29,7 +28,6 @@ text = "100%"
 layout_mode = 2
 focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_type_variation = &"IconButton"
 icon = ExtResource("2_284x5")
 icon_alignment = 1
 

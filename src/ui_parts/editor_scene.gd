@@ -1,43 +1,49 @@
-extends VBoxContainer
+extends PanelContainer
 
-const GlobalActionsScene = preload("res://src/ui_parts/global_actions.tscn")
+const TopAppBar = preload("res://src/ui_parts/top_app_bar.tscn")
 const CodeEditorScene = preload("res://src/ui_parts/code_editor.tscn")
 const InspectorScene = preload("res://src/ui_parts/inspector.tscn")
 const ViewportScene = preload("res://src/ui_parts/display.tscn")
 
-@onready var panel_container: PanelContainer = $PanelContainer
 
+var main_container: BoxContainer
 var main_splitter: SplitContainer
 
 
 func _ready() -> void:
-	Configs.theme_changed.connect(update_theme)
 	Configs.layout_changed.connect(update_layout)
 	Configs.orientation_changed.connect(update_orientation)
 	update_layout()
-	update_theme()
 	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
 	if version: Configs.current_sdk = version.SDK_INT
 
 func update_orientation():
 	if Configs.current_orientation == Configs.orientation.PORTRAIT:
+		main_container.vertical = true
 		main_splitter.vertical = true
 	else:
+		main_container.vertical = false
 		main_splitter.vertical = false
 
-func update_theme() -> void:
-	var stylebox := StyleBoxFlat.new()
-	stylebox.bg_color = ThemeUtils.overlay_panel_inner_color
-	stylebox.set_content_margin_all(6)
-	panel_container.add_theme_stylebox_override("panel", stylebox)
-
-
 func update_layout() -> void:
-	for child in panel_container.get_children():
+	for child in get_children():
 		child.queue_free()
 	
 	var side_panel_top := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_TOP)
 	var side_panel_bottom := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_BOTTOM)
+	
+	var root_container = VBoxContainer.new()
+	add_child(root_container)
+	
+	# Setup the top bar.
+	root_container.add_child(TopAppBar.instantiate())
+	
+	# Create main container, it would contain side panel, viewport, and shortcut panel.
+	main_container = BoxContainer.new()
+	main_container.vertical = true
+	main_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	main_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	root_container.add_child(main_container)
 	
 	# Set up the main splitter.
 	main_splitter = SplitContainer.new()
@@ -46,7 +52,9 @@ func update_layout() -> void:
 	main_splitter.touch_dragger_enabled = true
 	main_splitter.split_offset = Configs.savedata.main_splitter_offset
 	main_splitter.dragged.connect(_on_main_splitter_dragged)
-	panel_container.add_child(main_splitter)
+	main_splitter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	main_splitter.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	main_container.add_child(main_splitter)
 	
 	var side_panel_margin_container := MarginContainer.new()
 	side_panel_margin_container.begin_bulk_theme_override()
@@ -65,9 +73,6 @@ func update_layout() -> void:
 	var side_panel_vbox := VBoxContainer.new()
 	side_panel_vbox.add_theme_constant_override("separation", 6)
 	side_panel_margin_container.add_child(side_panel_vbox)
-	
-	var global_actions := GlobalActionsScene.instantiate()
-	side_panel_vbox.add_child(global_actions)
 	
 	if not side_panel_top.is_empty() and not side_panel_bottom.is_empty():
 		# Layout parts both on top and on the bottom.

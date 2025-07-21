@@ -14,12 +14,12 @@ func get_setting_default(setting: String) -> Variant:
 	match setting:
 		"base_color":
 			match theme_preset:
-				ThemePreset.DARK: return Color("10101d")
+				ThemePreset.DARK: return Color("121212")
 				ThemePreset.LIGHT: return Color("e6e6ff")
 				ThemePreset.BLACK: return Color("000")
 		"accent_color":
 			match theme_preset:
-				ThemePreset.DARK: return Color("668cff")
+				ThemePreset.DARK: return Color("3e8cfc")
 				ThemePreset.LIGHT: return Color("0830a6ff")
 				ThemePreset.BLACK: return Color("7c8dbf")
 		"highlighter_preset":
@@ -231,14 +231,14 @@ const CURRENT_VERSION = 1
 			theme_preset = new_value
 			emit_changed()
 
-@export var base_color := Color("10101d"):
+@export var base_color := Color("121212"):
 	set(new_value):
 		if base_color != new_value:
 			base_color = new_value
 			emit_changed()
 			external_call(Configs.sync_theme)
 
-@export var accent_color := Color("668cff"):
+@export var accent_color := Color("BB86FC"):
 	set(new_value):
 		if accent_color != new_value:
 			accent_color = new_value

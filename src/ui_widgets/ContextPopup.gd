@@ -5,6 +5,7 @@ const arrow = preload("res://assets/icons/PopupArrow.svg")
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	theme_type_variation = "OutlinedPanel"
 
 
 static func create_shortcut_button(action: String, disabled := false,
@@ -26,7 +27,6 @@ custom_text := "", custom_icon: Texture2D = null) -> Button:
 		shortcut_obj.events = shortcut_events
 		btn.shortcut = shortcut_obj
 		btn.shortcut_feedback = false
-	
 	return btn
 
 static func create_shortcut_button_without_icon(action: String, disabled := false,

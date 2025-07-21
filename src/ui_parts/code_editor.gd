@@ -42,7 +42,6 @@ func update_theme() -> void:
 		var stylebox := get_theme_stylebox(theme_type, "TextEdit").duplicate()
 		stylebox.corner_radius_top_right = 0
 		stylebox.corner_radius_top_left = 0
-		stylebox.border_width_top = 2
 		stylebox.bg_color = ThemeUtils.line_edit_inner_color.lerp(ThemeUtils.extreme_theme_color, 0.1)
 		if error_bar.visible:
 			stylebox.corner_radius_bottom_right = 0
