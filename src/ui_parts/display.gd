@@ -5,7 +5,6 @@ const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
 @onready var viewport: SubViewport = %Viewport
 @onready var reference_texture: TextureRect = %Viewport/ReferenceTexture
 @onready var reference_button: Button = %LeftMenu/Reference
-@onready var visuals_button: Button = %LeftMenu/Visuals
 @onready var snapper: NumberEdit = %LeftMenu/Snapping/SnapNumberEdit
 @onready var snap_button: BetterButton = %LeftMenu/Snapping/SnapButton
 @onready var viewport_panel: PanelContainer = $ViewportPanel
@@ -39,22 +38,11 @@ func _ready() -> void:
 	get_window().window_input.connect(_update_input_debug)
 
 func update_translations() -> void:
-	%LeftMenu/Visuals.tooltip_text = Translator.translate("Visuals")
 	%LeftMenu/Snapping/SnapNumberEdit.tooltip_text = Translator.translate("Snap size")
 
 func update_theme() -> void:
-	var toolbar_stylebox := StyleBoxFlat.new()
-	toolbar_stylebox.bg_color = ThemeUtils.soft_base_color
-	toolbar_stylebox.set_content_margin_all(4)
-	toolbar.add_theme_stylebox_override("panel", toolbar_stylebox)
-	
 	var frame := StyleBoxFlat.new()
 	frame.draw_center = false
-	if Configs.current_orientation == Configs.orientation.PORTRAIT:
-		frame.border_width_top = 2
-	else:
-		frame.border_width_left = 2
-	frame.border_color = ThemeUtils.selected_tab_color.lerp(ThemeUtils.max_contrast_color, 0.16)
 	frame.set_content_margin_all(2.0)
 	viewport_panel.add_theme_stylebox_override("panel", frame)
 
@@ -83,18 +71,6 @@ func _on_reference_pressed() -> void:
 
 func paste_reference_image() -> void:
 	FileUtils.load_reference_from_image(DisplayServer.clipboard_get_image())
-
-func _on_visuals_button_pressed() -> void:
-	var btn_arr: Array[Button] = [
-		ContextPopup.create_shortcut_checkbox("view_show_grid", State.show_grid),
-		ContextPopup.create_shortcut_checkbox("view_show_handles", State.show_handles),
-		ContextPopup.create_shortcut_checkbox("view_rasterized_svg", State.view_rasterized)
-	]
-	
-	var visuals_popup := ContextPopup.new()
-	visuals_popup.setup(btn_arr, true)
-	HandlerGUI.popup_under_rect_center(visuals_popup, visuals_button.get_global_rect(),
-			get_viewport())
 
 
 func _on_show_reference_updated() -> void:

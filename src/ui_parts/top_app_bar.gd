@@ -4,8 +4,8 @@ const LayoutPopup = preload("res://src/ui_parts/layout_popup.gd")
 
 const LayoutPopupScene = preload("res://src/ui_parts/layout_popup.tscn")
 
-@onready var more_options: Button = $LeftSide/MoreOptions
-@onready var size_button: Button = $RightSide/SizeButton
+@onready var more_options: Button = $RightSide/MoreOptions
+@onready var size_button: Button = $SizeButton
 @onready var layout_button: Button = $LeftSide/LayoutButton
 
 func update_translation() -> void:

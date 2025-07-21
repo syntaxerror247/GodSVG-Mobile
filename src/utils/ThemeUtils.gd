@@ -8,7 +8,8 @@ static var base_color: Color
 static var accent_color: Color
 static var is_theme_dark: bool
 
-static var max_contrast_color: Color  # White on dark theme, black on light theme.
+static var max_contrast_color: Color
+static var min_contrast_color: Color
 static var extreme_theme_color: Color  # Black on dark theme, white on light theme.
 static var tinted_contrast_color: Color  # Base color used to derive icon colors and other UI elements.
 static var gray_color: Color  # Light gray on dark theme, darker gray on light theme.
@@ -67,9 +68,9 @@ static var connected_button_border_color_hover: Color
 static var connected_button_inner_color_pressed: Color
 static var connected_button_border_color_pressed: Color
 
-static var context_icon_normal_color: Color
-static var context_icon_hover_color: Color
-static var context_icon_pressed_color: Color
+static var icon_normal_color: Color
+static var icon_hover_color: Color
+static var icon_pressed_color: Color
 
 static var translucent_button_color_disabled: Color
 static var flat_button_color_disabled: Color
@@ -96,108 +97,122 @@ static var selected_tab_border_color: Color
 static func color_difference(color1: Color, color2: Color) -> float:
 	return (absf(color1.r - color2.r) + absf(color1.g - color2.g) + absf(color1.b - color2.b)) / 3.0
 
+
 static func recalculate_colors() -> void:
 	base_color = Configs.savedata.base_color
 	accent_color = Configs.savedata.accent_color
-	is_theme_dark = (base_color.get_luminance() < 0.455)
-	
-	max_contrast_color = Color("#fff") if is_theme_dark else Color("000")
-	extreme_theme_color = Color("#000") if is_theme_dark else Color("fff")
-	tinted_contrast_color = Color("#def") if is_theme_dark else Color("061728")
-	gray_color = Color("808080") if is_theme_dark else Color("666")
-	black_or_white_counter_accent_color = Color("#000") if\
-			accent_color.get_luminance() > 0.69 else Color("fff")
-	
-	warning_icon_color = Color("fca") if is_theme_dark else Color("96592c")
-	info_icon_color = Color("acf") if is_theme_dark else Color("3a6ab0")
-	
-	intermediate_color = accent_color.lerp(extreme_theme_color, 0.6)
-	if is_theme_dark:
-		intermediate_color.s *= 0.8
-	else:
-		intermediate_color.s = lerpf(intermediate_color.s, 1.0, minf(0.2, intermediate_color.s))
-		intermediate_color.v **= 0.75
-	
+	is_theme_dark = base_color.get_luminance() < 0.5
+
+	# Dynamic contrast anchors
+	extreme_theme_color = Color.BLACK if is_theme_dark else Color.WHITE
+	max_contrast_color = Color(1, 1, 1, 0.94) if is_theme_dark else Color(0, 0, 0, 0.87)
+	min_contrast_color = Color(1, 1, 1, 0.24) if is_theme_dark else Color(0, 0, 0, 0.24)
+
+	tinted_contrast_color = accent_color.lerp(max_contrast_color, 0.4)
+	gray_color = base_color.lerp(max_contrast_color, 0.5)
+	black_or_white_counter_accent_color = extreme_theme_color if is_theme_dark else max_contrast_color
+
+	# Icons
+	warning_icon_color = Color("#FFD54F")
+	info_icon_color = Color("#64B5F6")
+
+	# Intermediate/neutral variants
+	intermediate_color = accent_color.lerp(extreme_theme_color, 0.4)
+	intermediate_color.s *= 0.8
 	desaturated_color = intermediate_color.lerp(gray_color, 0.3).lerp(extreme_theme_color, 0.08)
-	if not is_theme_dark:
-		desaturated_color.v *= 0.9
 	disabled_color = intermediate_color.lerp(gray_color, 0.8)
-	
-	soft_base_color = base_color.lerp(max_contrast_color, 0.015 if is_theme_dark else 0.03)
-	softer_base_color = base_color.lerp(max_contrast_color, 0.04 if is_theme_dark else 0.08)
+
+	# Base/accent soft tones
+	soft_base_color = base_color.lerp(max_contrast_color, 0.015)
+	softer_base_color = base_color.lerp(max_contrast_color, 0.04)
 	soft_accent_color = accent_color.lerp(extreme_theme_color, 0.1)
-	var intense_accent_color = accent_color.lerp(max_contrast_color, 0.1)
-	hover_overlay_color = Color(tinted_contrast_color, 0.08)
+
+	# Overlay layers
+	hover_overlay_color = Color(max_contrast_color, 0.08)
 	pressed_overlay_color = Color(tinted_contrast_color.lerp(soft_accent_color, 0.6), 0.24)
 	hover_pressed_overlay_color = hover_overlay_color.blend(pressed_overlay_color)
-	
-	soft_hover_overlay_color = Color(tinted_contrast_color, 0.06)
+
+	soft_hover_overlay_color = Color(max_contrast_color, 0.06)
 	soft_pressed_overlay_color = Color(tinted_contrast_color.lerp(soft_accent_color, 0.4), 0.18)
 	soft_hover_pressed_overlay_color = soft_hover_overlay_color.blend(soft_pressed_overlay_color)
-	
-	strong_hover_overlay_color = Color(tinted_contrast_color, 0.12)
-	stronger_hover_overlay_color = Color(tinted_contrast_color, 0.16)
-	
-	intermediate_hover_color = intermediate_color.blend(
-			hover_overlay_color if is_theme_dark else stronger_hover_overlay_color)
+
+	strong_hover_overlay_color = Color(max_contrast_color, 0.12)
+	stronger_hover_overlay_color = Color(max_contrast_color, 0.16)
+
+	# Intermediate overlays
+	intermediate_hover_color = intermediate_color.blend(hover_overlay_color)
 	soft_intermediate_color = intermediate_color.lerp(extreme_theme_color, 0.36)
-	soft_intermediate_hover_color = soft_intermediate_color.blend(
-			soft_hover_overlay_color if is_theme_dark else hover_overlay_color)
-	softer_intermediate_color = intermediate_color.lerp(extreme_theme_color, 0.44)
-	if not is_theme_dark:
-		softer_intermediate_color.s *= 0.8
-	softer_intermediate_hover_color = softer_intermediate_color.blend(
-			soft_hover_overlay_color if is_theme_dark else hover_overlay_color)
-	
-	text_color = Color(max_contrast_color, 0.875)
-	highlighted_text_color = Color(max_contrast_color)
-	dim_text_color = Color(max_contrast_color, 0.75)
-	dimmer_text_color = Color(max_contrast_color, 0.5)
-	subtle_text_color = Color(max_contrast_color, 0.375)
+	soft_intermediate_hover_color = soft_intermediate_color.blend(soft_hover_overlay_color)
+	softer_intermediate_color = intermediate_color.lerp(extreme_theme_color, 0.48)
+	softer_intermediate_hover_color = softer_intermediate_color.blend(soft_hover_overlay_color)
+
+	# Text
+	text_color = Color(max_contrast_color, 0.87)
+	highlighted_text_color = max_contrast_color
+	dim_text_color = Color(max_contrast_color, 0.6)
+	dimmer_text_color = Color(max_contrast_color, 0.38)
+	subtle_text_color = Color(max_contrast_color, 0.24)
 	editable_text_color = tinted_contrast_color
-	
-	basic_panel_inner_color = base_color.lerp(max_contrast_color, 0.05)
+
+	# Panels
+	basic_panel_inner_color = base_color.lerp(extreme_theme_color, 0.1).lerp(max_contrast_color, 0.04)
 	basic_panel_border_color = desaturated_color
-	subtle_panel_border_color = basic_panel_border_color.lerp(basic_panel_inner_color, 0.64)
-	caret_color = Color(tinted_contrast_color, 0.875)
-	selection_color = Color(accent_color, 0.375)
-	disabled_selection_color = Color(gray_color, 0.4)
-	
-	common_button_inner_color_pressed = intermediate_color.lerp(accent_color, 0.64).lerp(extreme_theme_color, 0.4)
-	common_button_border_color_pressed = intermediate_color.lerp(accent_color, 0.8)
-	common_button_inner_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.72)
-	common_button_border_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.56)
-	
-	context_icon_normal_color = tinted_contrast_color.lerp(extreme_theme_color, 0.2)
-	context_icon_hover_color = tinted_contrast_color
-	context_icon_pressed_color = max_contrast_color
-	
-	translucent_button_color_disabled = Color(disabled_color, 0.2)
-	flat_button_color_disabled = Color(disabled_color, 0.15)
-	
+	subtle_panel_border_color = desaturated_color.lerp(basic_panel_inner_color, 0.64)
+
+	overlay_panel_inner_color = base_color.lerp(extreme_theme_color, 0.15)
+	overlay_panel_subtler_inner_color = base_color.lerp(extreme_theme_color, 0.08)
+
+	tab_container_panel_inner_color = base_color.lerp(extreme_theme_color, 0.12)
+	tab_container_panel_border_color = max_contrast_color.lerp(base_color, 0.9)
+
 	subtle_flat_panel_color = base_color
 	contrast_flat_panel_color = Color(tinted_contrast_color, 0.1)
-	overlay_panel_inner_color = base_color.lerp(extreme_theme_color, 0.1)
-	overlay_panel_subtler_inner_color = base_color.lerp(extreme_theme_color, 0.075)
-	
-	scrollbar_pressed_color = intermediate_color.blend(Color(tinted_contrast_color.lerp(intense_accent_color, 0.2), 0.4))
-	
-	line_edit_focus_color = Color(accent_color, 0.4)
-	line_edit_inner_color = desaturated_color.lerp(extreme_theme_color, 0.74)
-	line_edit_normal_border_color = desaturated_color.lerp(extreme_theme_color, 0.42)
-	mini_line_edit_normal_border_color = desaturated_color.lerp(extreme_theme_color, 0.225)
-	line_edit_inner_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.88)
-	line_edit_border_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.68)
-	
+
+	# Selection
+	caret_color = accent_color.lerp(max_contrast_color, 0.3)
+	selection_color = Color(accent_color, 0.3)
+	disabled_selection_color = Color(gray_color, 0.4)
+
+	# Buttons
+	common_button_inner_color_pressed = soft_accent_color.blend(max_contrast_color).lerp(base_color, 0.6)
+	common_button_border_color_pressed = accent_color.lerp(max_contrast_color, 0.5)
+	common_button_inner_color_disabled = base_color.lerp(max_contrast_color, 0.08)
+	common_button_border_color_disabled = base_color.lerp(max_contrast_color, 0.12)
+
+	flat_button_color_disabled = base_color.lerp(max_contrast_color, 0.08)
+	translucent_button_color_disabled = base_color.lerp(max_contrast_color, 0.1)
+
 	connected_button_inner_color_hover = line_edit_inner_color.blend(hover_overlay_color)
 	connected_button_border_color_hover = line_edit_normal_border_color.blend(strong_hover_overlay_color)
 	connected_button_inner_color_pressed = line_edit_inner_color.lerp(common_button_inner_color_pressed, 0.8)
 	connected_button_border_color_pressed = line_edit_normal_border_color.lerp(common_button_border_color_pressed, 0.6)
-	
-	tab_container_panel_inner_color = base_color.lerp(intermediate_color, 0.15).lerp(extreme_theme_color, 0.02)
-	tab_container_panel_border_color = desaturated_color.lerp(extreme_theme_color, 0.4)
+
+	# Scrollbars
+	scrollbar_pressed_color = accent_color.lerp(max_contrast_color, 0.4)
+
+	# LineEdits
+	line_edit_focus_color = Color(accent_color, 0.4)
+	line_edit_inner_color = base_color.lerp(extreme_theme_color, 0.2)
+	line_edit_normal_border_color = accent_color.lerp(max_contrast_color, 0.4)
+	mini_line_edit_normal_border_color = accent_color.lerp(max_contrast_color, 0.3)
+	line_edit_inner_color_disabled = base_color.lerp(extreme_theme_color, 0.6)
+	line_edit_border_color_disabled = base_color.lerp(max_contrast_color, 0.4)
+
+	# Tabs
 	selected_tab_color = softer_intermediate_hover_color.lerp(accent_color, 0.2)
 	selected_tab_border_color = accent_color
+	
+	# Icons
+	var icon_base = accent_color.lerp(max_contrast_color, 0.4)
+	if is_theme_dark:
+		icon_normal_color  = icon_base.lightened(0.1)
+		icon_hover_color   = icon_base.lightened(0.2)
+		icon_pressed_color = icon_base.darkened(0.1)
+	else:
+		icon_normal_color  = icon_base.darkened(0.05)
+		icon_hover_color   = icon_base
+		icon_pressed_color = icon_base.darkened(0.15)
+
 
 static func generate_theme() -> Theme:
 	recalculate_colors()
@@ -219,6 +234,7 @@ static func generate_theme() -> Theme:
 	_setup_splitcontainer(theme)
 	return theme
 
+
 static func generate_and_apply_theme() -> void:
 	var default_theme := ThemeDB.get_default_theme()
 	default_theme.default_font = regular_font
@@ -230,121 +246,136 @@ static func generate_and_apply_theme() -> void:
 static func _setup_panelcontainer(theme: Theme) -> void:
 	theme.add_type("PanelContainer")
 	var stylebox := StyleBoxFlat.new()
-	stylebox.set_corner_radius_all(4)
-	stylebox.set_border_width_all(2)
-	stylebox.content_margin_left = 2.0
-	stylebox.content_margin_right = 2.0
-	stylebox.bg_color = basic_panel_inner_color
-	stylebox.border_color = basic_panel_border_color
+	stylebox.set_corner_radius_all(12)
+	#stylebox.set_border_width_all(1)
+	stylebox.content_margin_left = 8.0
+	stylebox.content_margin_right = 8.0
+	stylebox.content_margin_top = 6.0
+	stylebox.content_margin_bottom = 6.0
+	stylebox.bg_color = basic_panel_inner_color # surfaceContainer
+	#stylebox.border_color = basic_panel_border_color # outline
 	theme.set_stylebox("panel", "PanelContainer", stylebox)
 	
+	theme.add_type("OutlinedPanel")
+	theme.set_type_variation("OutlinedPanel", "PanelContainer")
+	var outline_stylebox := StyleBoxFlat.new()
+	outline_stylebox.set_corner_radius_all(12)
+	outline_stylebox.set_border_width_all(1)
+	outline_stylebox.content_margin_left = 8.0
+	outline_stylebox.content_margin_right = 8.0
+	outline_stylebox.content_margin_top = 6.0
+	outline_stylebox.content_margin_bottom = 6.0
+	outline_stylebox.bg_color = basic_panel_inner_color # surfaceContainer
+	outline_stylebox.border_color = basic_panel_border_color # outline
+	theme.set_stylebox("panel", "OutlinedPanel", outline_stylebox)
+
 	theme.add_type("SpaciousPanel")
 	theme.set_type_variation("SpaciousPanel", "PanelContainer")
 	var spacious_stylebox := stylebox.duplicate()
-	spacious_stylebox.content_margin_left = 10.0
-	spacious_stylebox.content_margin_right = 10.0
-	spacious_stylebox.content_margin_top = 4.0
-	spacious_stylebox.content_margin_bottom = 8.0
+	spacious_stylebox.content_margin_left = 16.0
+	spacious_stylebox.content_margin_right = 16.0
+	spacious_stylebox.content_margin_top = 12.0
+	spacious_stylebox.content_margin_bottom = 12.0
 	theme.set_stylebox("panel", "SpaciousPanel", spacious_stylebox)
-	
+
 	theme.add_type("Window")
 	theme.set_stylebox("embedded_border", "Window", stylebox)
-	
+
 	theme.add_type("AcceptDialog")
 	theme.set_stylebox("panel", "AcceptDialog", spacious_stylebox)
-	
+
 	theme.add_type("SubtleFlatPanel")
 	theme.set_type_variation("SubtleFlatPanel", "PanelContainer")
 	var subtle_panel_stylebox := StyleBoxFlat.new()
-	subtle_panel_stylebox.set_corner_radius_all(3)
-	subtle_panel_stylebox.content_margin_left = 4.0
-	subtle_panel_stylebox.content_margin_right = 4.0
-	subtle_panel_stylebox.content_margin_top = 2.0
-	subtle_panel_stylebox.content_margin_bottom = 2.0
-	subtle_panel_stylebox.bg_color = subtle_flat_panel_color
+	subtle_panel_stylebox.content_margin_left = 8.0
+	subtle_panel_stylebox.content_margin_right = 8.0
+	subtle_panel_stylebox.content_margin_top = 6.0
+	subtle_panel_stylebox.content_margin_bottom = 6.0
+	subtle_panel_stylebox.bg_color = subtle_flat_panel_color # surfaceVariant
 	theme.set_stylebox("panel", "SubtleFlatPanel", subtle_panel_stylebox)
-	
+
 	theme.add_type("ContrastFlatPanel")
 	theme.set_type_variation("ContrastFlatPanel", "PanelContainer")
 	var contrast_panel_stylebox := StyleBoxFlat.new()
-	contrast_panel_stylebox.set_corner_radius_all(5)
-	contrast_panel_stylebox.content_margin_left = 4.0
-	contrast_panel_stylebox.content_margin_right = 4.0
-	contrast_panel_stylebox.content_margin_top = 2.0
-	contrast_panel_stylebox.content_margin_bottom = 2.0
-	contrast_panel_stylebox.bg_color = contrast_flat_panel_color
+	contrast_panel_stylebox.set_corner_radius_all(8)
+	contrast_panel_stylebox.content_margin_left = 8.0
+	contrast_panel_stylebox.content_margin_right = 8.0
+	contrast_panel_stylebox.content_margin_top = 6.0
+	contrast_panel_stylebox.content_margin_bottom = 6.0
+	contrast_panel_stylebox.bg_color = contrast_flat_panel_color # elevatedSurface
 	theme.set_stylebox("panel", "ContrastFlatPanel", contrast_panel_stylebox)
-	
+
 	theme.add_type("OverlayPanel")
 	theme.set_type_variation("OverlayPanel", "PanelContainer")
 	var overlay_stylebox := StyleBoxFlat.new()
-	overlay_stylebox.set_corner_radius_all(2)
-	overlay_stylebox.set_border_width_all(2)
-	overlay_stylebox.content_margin_left = 8.0
-	overlay_stylebox.content_margin_right = 10.0
-	overlay_stylebox.content_margin_top = 6.0
-	overlay_stylebox.content_margin_bottom = 10.0
-	overlay_stylebox.bg_color = overlay_panel_inner_color
+	overlay_stylebox.set_corner_radius_all(12)
+	overlay_stylebox.set_border_width_all(1)
+	overlay_stylebox.content_margin_left = 12.0
+	overlay_stylebox.content_margin_right = 12.0
+	overlay_stylebox.content_margin_top = 10.0
+	overlay_stylebox.content_margin_bottom = 12.0
+	overlay_stylebox.bg_color = overlay_panel_inner_color # surfaceContainerHigh
 	overlay_stylebox.border_color = intermediate_color
 	theme.set_stylebox("panel", "OverlayPanel", overlay_stylebox)
-	
+
 	theme.add_type("TabItem")
 	theme.set_type_variation("TabItem", "PanelContainer")
 	var tab_stylebox := StyleBoxFlat.new()
-	tab_stylebox.set_corner_radius_all(12)
-	tab_stylebox.content_margin_left = 10.0
-	tab_stylebox.content_margin_right = 10.0
-	tab_stylebox.content_margin_top = 8.0
-	tab_stylebox.content_margin_bottom = 8.0
-	tab_stylebox.bg_color = Color("181d2f")
+	tab_stylebox.set_corner_radius_all(16)
+	tab_stylebox.content_margin_left = 12.0
+	tab_stylebox.content_margin_right = 12.0
+	tab_stylebox.content_margin_top = 10.0
+	tab_stylebox.content_margin_bottom = 10.0
+	tab_stylebox.bg_color = subtle_flat_panel_color
 	theme.set_stylebox("panel", "TabItem", tab_stylebox)
-	
+
 	theme.add_type("TabItemActive")
 	theme.set_type_variation("TabItemActive", "PanelContainer")
 	var border_tab_stylebox := tab_stylebox.duplicate()
-	border_tab_stylebox.set_border_width_all(4)
-	border_tab_stylebox.bg_color = Color("242b45")
-	border_tab_stylebox.border_color = Color("2e69bf")
+	border_tab_stylebox.set_border_width_all(2)
+	border_tab_stylebox.bg_color = contrast_flat_panel_color
+	border_tab_stylebox.border_color = selected_tab_border_color
 	theme.set_stylebox("panel", "TabItemActive", border_tab_stylebox)
-	
+
 	theme.add_type("TextBox")
 	theme.set_type_variation("TextBox", "PanelContainer")
 	var textbox_stylebox := StyleBoxFlat.new()
-	textbox_stylebox.set_corner_radius_all(2)
-	textbox_stylebox.set_border_width_all(2)
-	textbox_stylebox.content_margin_left = 6.0
-	textbox_stylebox.content_margin_right = 6.0
-	textbox_stylebox.content_margin_top = 2.0
-	textbox_stylebox.content_margin_bottom = 4.0
+	textbox_stylebox.set_corner_radius_all(8)
+	textbox_stylebox.set_border_width_all(1)
+	textbox_stylebox.content_margin_left = 10.0
+	textbox_stylebox.content_margin_right = 10.0
+	textbox_stylebox.content_margin_top = 8.0
+	textbox_stylebox.content_margin_bottom = 8.0
 	textbox_stylebox.bg_color = overlay_panel_inner_color.lerp(extreme_theme_color, 0.2)
 	textbox_stylebox.border_color = subtle_panel_border_color
 	theme.set_stylebox("panel", "TextBox", textbox_stylebox)
-	
+
 	theme.add_type("SideTabBar")
 	theme.set_type_variation("SideTabBar", "PanelContainer")
 	var side_tabbar_stylebox := StyleBoxFlat.new()
 	side_tabbar_stylebox.bg_color = soft_base_color
 	side_tabbar_stylebox.set_content_margin_all(0)
-	side_tabbar_stylebox.corner_radius_top_left = 5
-	side_tabbar_stylebox.corner_radius_bottom_left = 5
+	side_tabbar_stylebox.corner_radius_top_left = 8
+	side_tabbar_stylebox.corner_radius_bottom_left = 8
 	theme.set_stylebox("panel", "SideTabBar", side_tabbar_stylebox)
-	
+
 	theme.add_type("SideBarContent")
 	theme.set_type_variation("SideBarContent", "PanelContainer")
 	var panel_stylebox := StyleBoxFlat.new()
 	panel_stylebox.bg_color = tab_container_panel_inner_color
 	panel_stylebox.border_color = tab_container_panel_border_color
-	panel_stylebox.set_border_width_all(2)
-	panel_stylebox.corner_radius_top_right = 5
-	panel_stylebox.corner_radius_bottom_right = 5
-	panel_stylebox.content_margin_left = 14
-	panel_stylebox.content_margin_right = 2
-	panel_stylebox.content_margin_bottom = 2
-	panel_stylebox.content_margin_top = 2
+	panel_stylebox.set_border_width_all(1)
+	panel_stylebox.corner_radius_top_right = 8
+	panel_stylebox.corner_radius_bottom_right = 8
+	panel_stylebox.content_margin_left = 16
+	panel_stylebox.content_margin_right = 8
+	panel_stylebox.content_margin_top = 8
+	panel_stylebox.content_margin_bottom = 8
 	theme.set_stylebox("panel", "SideBarContent", panel_stylebox)
 
+
 static func _setup_button(theme: Theme) -> void:
-	theme.add_type("Button")
+	theme.add_type("Button") # FilledButton
 	theme.set_constant("h_separation", "Button", 5)
 	theme.set_color("font_color", "Button", text_color)
 	theme.set_color("font_disabled_color", "Button", subtle_text_color)
@@ -358,13 +389,10 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_color("icon_hover_pressed_color", "Button", max_contrast_color)
 	theme.set_color("icon_focus_color", "Button", max_contrast_color)
 	theme.set_color("icon_disabled_color", "Button", gray_color)
+	
 	var button_stylebox := StyleBoxFlat.new()
-	button_stylebox.set_corner_radius_all(5)
-	button_stylebox.set_border_width_all(2)
-	button_stylebox.content_margin_bottom = 3.0
-	button_stylebox.content_margin_top = 3.0
-	button_stylebox.content_margin_left = 6.0
-	button_stylebox.content_margin_right = 6.0
+	button_stylebox.set_corner_radius_all(20)
+	button_stylebox.set_content_margin_all(10)
 	
 	var normal_button_stylebox := button_stylebox.duplicate()
 	normal_button_stylebox.bg_color = soft_intermediate_color
@@ -396,33 +424,73 @@ static func _setup_button(theme: Theme) -> void:
 	focus_button_stylebox.border_color = Configs.savedata.accent_color
 	theme.set_stylebox("focus", "Button", focus_button_stylebox)
 	
+	theme.add_type("TonalButton")
+	theme.set_type_variation("TonalButton", "Button")
+
+	var tonal_color := Configs.savedata.accent_color.lerp(soft_base_color, 0.4)
+	var tonal_style := StyleBoxFlat.new()
+	tonal_style.set_corner_radius_all(20)
+	tonal_style.set_content_margin_all(10)
+	tonal_style.bg_color = tonal_color
+	theme.set_stylebox("normal", "TonalButton", tonal_style)
+
+	var hover_tonal := tonal_style.duplicate()
+	hover_tonal.bg_color = tonal_color.lerp(Color.WHITE, 0.1)
+	theme.set_stylebox("hover", "TonalButton", hover_tonal)
+
+	var pressed_tonal := tonal_style.duplicate()
+	pressed_tonal.bg_color = tonal_color.lerp(Color.BLACK, 0.2)
+	theme.set_stylebox("pressed", "TonalButton", pressed_tonal)
+
+	theme.set_stylebox("disabled", "TonalButton", tonal_style)
+
+	theme.add_type("OutlinedButton")
+	theme.set_type_variation("OutlinedButton", "Button")
+
+	var outlined_style := StyleBoxFlat.new()
+	outlined_style.set_corner_radius_all(20)
+	outlined_style.set_border_width_all(2)
+	outlined_style.border_color = Configs.savedata.accent_color
+	outlined_style.bg_color = Color(0, 0, 0, 0)
+	outlined_style.set_content_margin_all(10)
+	theme.set_stylebox("normal", "OutlinedButton", outlined_style)
+
+	var hover_outlined := outlined_style.duplicate()
+	hover_outlined.bg_color = Color(Configs.savedata.accent_color, 0.06)
+	theme.set_stylebox("hover", "OutlinedButton", hover_outlined)
+
+	var pressed_outlined := outlined_style.duplicate()
+	pressed_outlined.bg_color = Color(Configs.savedata.accent_color, 0.12)
+	theme.set_stylebox("pressed", "OutlinedButton", pressed_outlined)
+
+	theme.set_stylebox("disabled", "OutlinedButton", outlined_style)
+
+	
 	theme.add_type("IconButton")
 	theme.set_type_variation("IconButton", "Button")
+	theme.set_color("icon_normal_color", "IconButton", icon_normal_color)
+	theme.set_color("icon_hover_color", "IconButton", icon_hover_color)
+	theme.set_color("icon_pressed_color", "IconButton", icon_pressed_color)
+	theme.set_color("icon_disabled_color", "IconButton", gray_color)
+	var icon_button_stylebox := normal_button_stylebox.duplicate()
+	icon_button_stylebox.draw_center = false
 	
-	var normal_icon_button_stylebox := normal_button_stylebox.duplicate()
-	normal_icon_button_stylebox.set_content_margin_all(4)
-	theme.set_stylebox("normal", "IconButton", normal_icon_button_stylebox)
+	theme.set_stylebox("normal", "IconButton", icon_button_stylebox)
 	
-	var hover_icon_button_stylebox := hover_button_stylebox.duplicate()
-	hover_icon_button_stylebox.set_content_margin_all(4)
-	theme.set_stylebox("hover", "IconButton", hover_icon_button_stylebox)
+	theme.set_stylebox("hover", "IconButton", icon_button_stylebox)
 	
-	var pressed_icon_button_stylebox := pressed_button_stylebox.duplicate()
-	pressed_icon_button_stylebox.set_content_margin_all(4)
-	theme.set_stylebox("pressed", "IconButton", pressed_icon_button_stylebox)
+	theme.set_stylebox("pressed", "IconButton", pressed_button_stylebox)
 	
-	var hover_pressed_icon_button_stylebox := hover_pressed_button_stylebox.duplicate()
-	hover_pressed_icon_button_stylebox.set_content_margin_all(4)
-	theme.set_stylebox("hover_pressed", "IconButton", hover_pressed_icon_button_stylebox)
-	
-	var disabled_icon_button_stylebox := disabled_button_stylebox.duplicate()
-	disabled_icon_button_stylebox.set_content_margin_all(4)
+	var disabled_icon_button_stylebox := icon_button_stylebox.duplicate()
+	# Ensure enough contrast.
+	disabled_icon_button_stylebox.bg_color = Color(Color.BLACK, maxf(0.16,
+		0.48 - color_difference(Color.BLACK, basic_panel_inner_color) * 2))
 	theme.set_stylebox("disabled", "IconButton", disabled_icon_button_stylebox)
 	
 	theme.add_type("LeftConnectedButton")
 	theme.set_type_variation("LeftConnectedButton", "Button")
-	theme.set_color("icon_normal_color", "LeftConnectedButton", context_icon_normal_color)
-	theme.set_color("icon_hover_color", "LeftConnectedButton", context_icon_hover_color)
+	theme.set_color("icon_normal_color", "LeftConnectedButton", icon_normal_color)
+	theme.set_color("icon_hover_color", "LeftConnectedButton", icon_hover_color)
 	var left_connected_button_stylebox := StyleBoxFlat.new()
 	left_connected_button_stylebox.corner_radius_bottom_left = 0
 	left_connected_button_stylebox.corner_radius_top_left = 0
@@ -493,8 +561,8 @@ static func _setup_button(theme: Theme) -> void:
 	
 	theme.add_type("RightConnectedButton")
 	theme.set_type_variation("RightConnectedButton", "Button")
-	theme.set_color("icon_normal_color", "RightConnectedButton", context_icon_normal_color)
-	theme.set_color("icon_hover_color", "RightConnectedButton", context_icon_hover_color)
+	theme.set_color("icon_normal_color", "RightConnectedButton", icon_normal_color)
+	theme.set_color("icon_hover_color", "RightConnectedButton", icon_hover_color)
 	var right_connected_button_stylebox := StyleBoxFlat.new()
 	right_connected_button_stylebox.corner_radius_bottom_left = 5
 	right_connected_button_stylebox.corner_radius_top_left = 5
@@ -565,9 +633,9 @@ static func _setup_button(theme: Theme) -> void:
 	
 	theme.add_type("TranslucentButton")
 	theme.set_type_variation("TranslucentButton", "Button")
-	theme.set_color("icon_normal_color", "TranslucentButton", context_icon_normal_color)
-	theme.set_color("icon_hover_color", "TranslucentButton", context_icon_normal_color)
-	theme.set_color("icon_pressed_color", "TranslucentButton", context_icon_normal_color)
+	theme.set_color("icon_normal_color", "TranslucentButton", icon_normal_color)
+	theme.set_color("icon_hover_color", "TranslucentButton", icon_normal_color)
+	theme.set_color("icon_pressed_color", "TranslucentButton", icon_normal_color)
 	
 	var normal_translucent_button_stylebox := StyleBoxFlat.new()
 	normal_translucent_button_stylebox.set_corner_radius_all(5)
@@ -589,35 +657,27 @@ static func _setup_button(theme: Theme) -> void:
 	
 	theme.add_type("FlatButton")
 	theme.set_type_variation("FlatButton", "Button")
-	theme.set_color("icon_normal_color", "FlatButton", context_icon_normal_color)
-	theme.set_color("icon_hover_color", "FlatButton", context_icon_hover_color)
-	theme.set_color("icon_pressed_color", "FlatButton", context_icon_pressed_color)
-	theme.set_color("icon_hover_pressed_color", "FlatButton", context_icon_pressed_color)
-	var flat_button_stylebox := StyleBoxFlat.new()
-	flat_button_stylebox.set_corner_radius_all(3)
-	flat_button_stylebox.set_content_margin_all(2)
+	theme.set_color("icon_normal_color", "FlatButton", icon_normal_color)
+	theme.set_color("icon_hover_color", "FlatButton", icon_hover_color)
+	theme.set_color("icon_pressed_color", "FlatButton", icon_pressed_color)
+	theme.set_color("icon_hover_pressed_color", "FlatButton", icon_pressed_color)
 	
-	var normal_flat_button_stylebox := StyleBoxEmpty.new()
-	normal_flat_button_stylebox.set_content_margin_all(2)
-	theme.set_stylebox("normal", "FlatButton", normal_flat_button_stylebox)
+	theme.set_stylebox("normal", "FlatButton", icon_button_stylebox)
 	
-	var hover_flat_button_stylebox := flat_button_stylebox.duplicate()
-	hover_flat_button_stylebox.bg_color = hover_overlay_color
-	theme.set_stylebox("hover", "FlatButton", hover_flat_button_stylebox)
+	theme.set_stylebox("hover", "FlatButton", icon_button_stylebox)
 	
-	var pressed_flat_button_stylebox := flat_button_stylebox.duplicate()
-	pressed_flat_button_stylebox.bg_color = pressed_overlay_color
-	theme.set_stylebox("pressed", "FlatButton", pressed_flat_button_stylebox)
+	theme.set_stylebox("pressed", "FlatButton", pressed_button_stylebox)
 	
-	var disabled_flat_button_stylebox := flat_button_stylebox.duplicate()
+	var disabled_flat_button_stylebox := icon_button_stylebox.duplicate()
 	disabled_flat_button_stylebox.bg_color = flat_button_color_disabled
+	disabled_flat_button_stylebox.draw_center = true
 	theme.set_stylebox("disabled", "FlatButton", disabled_flat_button_stylebox)
 	
 	theme.add_type("ContextButton")
 	theme.set_type_variation("ContextButton", "Button")
-	theme.set_color("icon_normal_color", "ContextButton", context_icon_normal_color)
-	theme.set_color("icon_hover_color", "ContextButton", context_icon_hover_color)
-	theme.set_color("icon_pressed_color", "ContextButton", context_icon_pressed_color)
+	theme.set_color("icon_normal_color", "ContextButton", icon_normal_color)
+	theme.set_color("icon_hover_color", "ContextButton", icon_hover_color)
+	theme.set_color("icon_pressed_color", "ContextButton", icon_pressed_color)
 	theme.set_color("icon_disabled_color", "ContextButton", gray_color)
 	var context_button_stylebox := StyleBoxFlat.new()
 	context_button_stylebox.set_corner_radius_all(3)
@@ -644,7 +704,7 @@ static func _setup_button(theme: Theme) -> void:
 	var disabled_context_button_stylebox := context_button_stylebox.duplicate()
 	# Ensure enough contrast.
 	disabled_context_button_stylebox.bg_color = Color(Color.BLACK, maxf(0.16,
-			0.48 - color_difference(Color.BLACK, basic_panel_inner_color) * 2))
+		0.48 - color_difference(Color.BLACK, basic_panel_inner_color) * 2))
 	theme.set_stylebox("disabled", "ContextButton", disabled_context_button_stylebox)
 	
 	theme.add_type("PathCommandAbsoluteButton")
@@ -657,62 +717,62 @@ static func _setup_button(theme: Theme) -> void:
 	path_command_absolute_button_stylebox_normal.content_margin_top = 0.0
 	path_command_absolute_button_stylebox_normal.content_margin_bottom = 0.0
 	path_command_absolute_button_stylebox_normal.bg_color = Color("cc7a29") if\
-			ThemeUtils.is_theme_dark else Color("f2cb91")
+		ThemeUtils.is_theme_dark else Color("f2cb91")
 	path_command_absolute_button_stylebox_normal.border_color = Color("e6ae5c") if\
-			ThemeUtils.is_theme_dark else Color("ffaa33")
+		ThemeUtils.is_theme_dark else Color("ffaa33")
 	theme.set_stylebox("normal", "PathCommandAbsoluteButton",
-			path_command_absolute_button_stylebox_normal)
+		path_command_absolute_button_stylebox_normal)
 	theme.set_stylebox("disabled", "PathCommandAbsoluteButton",
-			path_command_absolute_button_stylebox_normal)
+		path_command_absolute_button_stylebox_normal)
 
 	var path_command_absolute_button_stylebox_hover :=\
-			path_command_absolute_button_stylebox_normal.duplicate()
+		path_command_absolute_button_stylebox_normal.duplicate()
 	path_command_absolute_button_stylebox_hover.bg_color = Color("d9822b") if\
-			ThemeUtils.is_theme_dark else Color("f2c279")
+		ThemeUtils.is_theme_dark else Color("f2c279")
 	path_command_absolute_button_stylebox_hover.border_color = Color("f2cb91") if\
-			ThemeUtils.is_theme_dark else Color("f29718")
+		ThemeUtils.is_theme_dark else Color("f29718")
 	theme.set_stylebox("hover", "PathCommandAbsoluteButton",
-			path_command_absolute_button_stylebox_hover)
+		path_command_absolute_button_stylebox_hover)
 
 	var path_command_absolute_button_stylebox_pressed :=\
-			path_command_absolute_button_stylebox_normal.duplicate()
+		path_command_absolute_button_stylebox_normal.duplicate()
 	path_command_absolute_button_stylebox_pressed.bg_color = Color("ffbf40") if\
-			ThemeUtils.is_theme_dark else Color("f2ae49")
+		ThemeUtils.is_theme_dark else Color("f2ae49")
 	path_command_absolute_button_stylebox_pressed.border_color = Color("ffecb3") if\
-			ThemeUtils.is_theme_dark else Color("e68600")
+		ThemeUtils.is_theme_dark else Color("e68600")
 	theme.set_stylebox("pressed", "PathCommandAbsoluteButton",
-			path_command_absolute_button_stylebox_pressed)
+		path_command_absolute_button_stylebox_pressed)
 
 	theme.add_type("PathCommandRelativeButton")
 	theme.set_type_variation("PathCommandRelativeButton", "Button")
 	var path_command_relative_button_stylebox_normal :=\
-			path_command_absolute_button_stylebox_normal.duplicate()
+		path_command_absolute_button_stylebox_normal.duplicate()
 	path_command_relative_button_stylebox_normal.bg_color = Color("a329cc") if\
-			ThemeUtils.is_theme_dark else Color("d291f2")
+		ThemeUtils.is_theme_dark else Color("d291f2")
 	path_command_relative_button_stylebox_normal.border_color = Color("bd73e6") if\
-			ThemeUtils.is_theme_dark else Color("bb33ff")
+		ThemeUtils.is_theme_dark else Color("bb33ff")
 	theme.set_stylebox("normal", "PathCommandRelativeButton",
-			path_command_relative_button_stylebox_normal)
+		path_command_relative_button_stylebox_normal)
 	theme.set_stylebox("disabled", "PathCommandRelativeButton",
-			path_command_relative_button_stylebox_normal)
+		path_command_relative_button_stylebox_normal)
 
 	var path_command_relative_button_stylebox_hover :=\
-			path_command_absolute_button_stylebox_normal.duplicate()
+		path_command_absolute_button_stylebox_normal.duplicate()
 	path_command_relative_button_stylebox_hover.bg_color = Color("ad2bd9") if\
-			ThemeUtils.is_theme_dark else Color("ca79f2")
+		ThemeUtils.is_theme_dark else Color("ca79f2")
 	path_command_relative_button_stylebox_hover.border_color = Color("d291f2") if\
-			ThemeUtils.is_theme_dark else Color("aa18f2")
+		ThemeUtils.is_theme_dark else Color("aa18f2")
 	theme.set_stylebox("hover", "PathCommandRelativeButton",
-			path_command_relative_button_stylebox_hover)
+		path_command_relative_button_stylebox_hover)
 
 	var path_command_relative_button_stylebox_pressed :=\
-			path_command_absolute_button_stylebox_normal.duplicate()
+		path_command_absolute_button_stylebox_normal.duplicate()
 	path_command_relative_button_stylebox_pressed.bg_color = Color("bf40ff") if\
-			ThemeUtils.is_theme_dark else Color("ba49f2")
+		ThemeUtils.is_theme_dark else Color("ba49f2")
 	path_command_relative_button_stylebox_pressed.border_color = Color("dfb3ff") if\
-			ThemeUtils.is_theme_dark else Color("9900e6")
+		ThemeUtils.is_theme_dark else Color("9900e6")
 	theme.set_stylebox("pressed", "PathCommandRelativeButton",
-			path_command_relative_button_stylebox_pressed)
+		path_command_relative_button_stylebox_pressed)
 	
 	theme.add_type("TextButton")
 	theme.set_type_variation("TextButton", "Button")
@@ -774,6 +834,7 @@ static func _setup_button(theme: Theme) -> void:
 	pressed_swatch_stylebox.bg_color = common_button_border_color_pressed
 	theme.set_stylebox("pressed", "Swatch", pressed_swatch_stylebox)
 	theme.set_stylebox("disabled", "Swatch", pressed_swatch_stylebox)
+
 
 static func _setup_checkbox(theme: Theme) -> void:
 	theme.add_type("CheckBox")
@@ -838,6 +899,7 @@ static func _setup_checkbox(theme: Theme) -> void:
 	disabled_checkbox_stylebox.bg_color = flat_button_color_disabled
 	theme.set_stylebox("disabled", "CheckBox", disabled_checkbox_stylebox)
 
+
 static func _setup_checkbutton(theme: Theme) -> void:
 	theme.add_type("CheckButton")
 	theme.set_color("font_color", "CheckButton", text_color)
@@ -862,6 +924,7 @@ static func _setup_checkbutton(theme: Theme) -> void:
 		</svg>""" %\
 		[gray_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
+
 
 static func _setup_itemlist(theme: Theme) -> void:
 	theme.add_type("ItemList")
@@ -897,6 +960,7 @@ static func _setup_itemlist(theme: Theme) -> void:
 	theme.set_stylebox("hovered_selected", "ItemList", hovered_selected_item_stylebox)
 	theme.set_stylebox("hovered_selected_focus", "ItemList", hovered_selected_item_stylebox)
 
+
 static func _setup_lineedit(theme: Theme) -> void:
 	theme.add_type("LineEdit")
 	theme.set_color("caret_color", "LineEdit", caret_color)
@@ -927,7 +991,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	var hover_stylebox := stylebox.duplicate()
 	hover_stylebox.draw_center = false
 	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-			stronger_hover_overlay_color
+		stronger_hover_overlay_color
 	theme.set_stylebox("hover", "LineEdit", hover_stylebox)
 	
 	var focus_stylebox := stylebox.duplicate()
@@ -966,7 +1030,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	var left_connected_hover_stylebox := left_connected_stylebox.duplicate()
 	left_connected_hover_stylebox.draw_center = false
 	left_connected_hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-			stronger_hover_overlay_color
+		stronger_hover_overlay_color
 	theme.set_stylebox("hover", "LeftConnectedLineEdit", left_connected_hover_stylebox)
 	
 	var left_connected_focus_stylebox := left_connected_stylebox.duplicate()
@@ -1005,7 +1069,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	var right_connected_hover_stylebox := right_connected_stylebox.duplicate()
 	right_connected_hover_stylebox.draw_center = false
 	right_connected_hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-			stronger_hover_overlay_color
+		stronger_hover_overlay_color
 	theme.set_stylebox("hover", "RightConnectedLineEdit", right_connected_hover_stylebox)
 	
 	var right_connected_focus_stylebox := right_connected_stylebox.duplicate()
@@ -1039,7 +1103,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	var mini_stylebox_hover := mini_stylebox.duplicate()
 	mini_stylebox_hover.draw_center = false
 	mini_stylebox_hover.border_color = strong_hover_overlay_color if is_theme_dark else\
-			stronger_hover_overlay_color
+		stronger_hover_overlay_color
 	theme.set_stylebox("hover", "MiniLineEdit", mini_stylebox_hover)
 	
 	var mini_stylebox_pressed := mini_stylebox.duplicate()
@@ -1059,6 +1123,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	theme.set_stylebox("hover", "GoodColorPickerLineEdit", empty_stylebox)
 	theme.set_stylebox("focus", "GoodColorPickerLineEdit", empty_stylebox)
 	theme.set_stylebox("read_only", "GoodColorPickerLineEdit", empty_stylebox)
+
 
 static func _setup_scrollbar(theme: Theme) -> void:
 	theme.add_type("HScrollBar")
@@ -1112,6 +1177,7 @@ static func _setup_scrollbar(theme: Theme) -> void:
 	v_scroll_stylebox.bg_color = softer_base_color
 	theme.set_stylebox("scroll", "VScrollBar", v_scroll_stylebox)
 
+
 static func _setup_separator(theme: Theme) -> void:
 	theme.add_type("HSeparator")
 	var stylebox := StyleBoxLine.new()
@@ -1126,6 +1192,7 @@ static func _setup_separator(theme: Theme) -> void:
 	small_stylebox.grow_begin = -3
 	small_stylebox.grow_end = -3
 	theme.set_stylebox("separator", "SmallHSeparator", small_stylebox)
+
 
 static func _setup_label(theme: Theme) -> void:
 	theme.add_type("Label")
@@ -1146,6 +1213,7 @@ static func _setup_label(theme: Theme) -> void:
 	theme.set_color("default_color", "RichTextLabel", text_color)
 	theme.set_color("selection_color", "RichTextLabel", selection_color)
 	theme.set_font("bold_font", "RichTextLabel", bold_font)
+
 
 static func _setup_tabcontainer(theme: Theme) -> void:
 	theme.add_type("TabContainer")
@@ -1214,6 +1282,7 @@ static func _setup_tabcontainer(theme: Theme) -> void:
 	tabbar_background_stylebox.corner_radius_top_right = 5
 	theme.set_stylebox("tabbar_background", "TabContainer", tabbar_background_stylebox)
 
+
 static func _setup_textedit(theme: Theme) -> void:
 	theme.add_type("TextEdit")
 	theme.set_color("caret_color", "TextEdit", Color.TRANSPARENT)
@@ -1223,8 +1292,6 @@ static func _setup_textedit(theme: Theme) -> void:
 	
 	var normal_stylebox := StyleBoxFlat.new()
 	normal_stylebox.bg_color = line_edit_inner_color
-	normal_stylebox.border_color = line_edit_normal_border_color
-	normal_stylebox.set_border_width_all(2)
 	normal_stylebox.set_corner_radius_all(5)
 	normal_stylebox.content_margin_left = 5.0
 	theme.set_stylebox("normal", "TextEdit", normal_stylebox)
@@ -1239,10 +1306,11 @@ static func _setup_textedit(theme: Theme) -> void:
 	var hover_stylebox := StyleBoxFlat.new()
 	hover_stylebox.draw_center = false
 	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-			stronger_hover_overlay_color
+		stronger_hover_overlay_color
 	hover_stylebox.set_border_width_all(2)
 	hover_stylebox.set_corner_radius_all(5)
 	theme.set_stylebox("hover", "TextEdit", hover_stylebox)
+
 
 static func _setup_tooltip(theme: Theme) -> void:
 	theme.add_type("TooltipPanel")
@@ -1261,6 +1329,7 @@ static func _setup_tooltip(theme: Theme) -> void:
 	theme.set_color("font_color", "TooltipLabel", text_color)
 	theme.set_font_size("font_size", "TooltipLabel", 14)
 	theme.set_font("font", "TooltipLabel", regular_font)
+
 
 static func _setup_splitcontainer(theme: Theme) -> void:
 	theme.add_type("SplitContainer")

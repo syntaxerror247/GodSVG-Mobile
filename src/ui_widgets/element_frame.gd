@@ -30,6 +30,7 @@ var surface := RenderingServer.canvas_item_create()  # Used for the drop indicat
 @onready var title_bar_ci := title_bar.get_canvas_item()
 
 var suppress_drag: bool = false
+var only_show_active: bool = false
 
 func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(surface, get_canvas_item())
@@ -84,7 +85,7 @@ func _exit_tree() -> void:
 
 # Logic for dragging.
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if suppress_drag or State.selected_xids.is_empty():
+	if suppress_drag or State.selected_xids.is_empty() or only_show_active:
 		return null
 	
 	State.set_selection_dragged(true)
@@ -110,6 +111,8 @@ func _on_title_button_pressed() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if only_show_active:
+		return
 	if event is InputEventMouseMotion and event.button_mask == 0:
 		if State.semi_hovered_xid != element.xid and\
 		not XIDUtils.is_parent(element.xid, State.hovered_xid):
@@ -204,6 +207,10 @@ func get_inner_rect(idx: int) -> Rect2:
 
 func determine_selection_highlight() -> void:
 	var is_selected := element.xid in State.selected_xids
+	if only_show_active:
+		is_selected = is_selected or (element.xid == State.semi_selected_xid)
+		visible = is_selected
+		return
 	var is_hovered := State.hovered_xid == element.xid
 	
 	if is_selected:

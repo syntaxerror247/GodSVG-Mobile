@@ -33,7 +33,6 @@ icon = ExtResource("4_sos04")
 icon_alignment = 1
 
 [node name="ScriptEditor" type="VBoxContainer" parent="."]
-custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = -2

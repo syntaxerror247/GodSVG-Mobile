@@ -6,19 +6,6 @@ func _ready() -> void:
 	pressed.connect(_on_file_button_pressed)
 	update_file_button()
 
-func _make_custom_tooltip(_for_text: String) -> Object:
-	var file_path := Configs.savedata.get_active_tab().get_presented_svg_file_path()
-	if file_path.is_empty():
-		return null
-	
-	var label := Label.new()
-	label.add_theme_font_override("font", ThemeUtils.mono_font)
-	label.add_theme_font_size_override("font_size", 12)
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.text = file_path
-	Utils.set_max_text_width(label, 192.0, 4.0)
-	return label
-
 func _on_file_button_pressed() -> void:
 	var btn_array: Array[Button] = []
 	btn_array.append(ContextPopup.create_shortcut_button("save"))

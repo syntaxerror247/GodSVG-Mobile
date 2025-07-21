@@ -1,28 +1,25 @@
-[gd_scene load_steps=17 format=3 uid="uid://bvrncl7e6yn5b"]
+[gd_scene load_steps=18 format=3 uid="uid://bvrncl7e6yn5b"]
 
 [ext_resource type="Script" uid="uid://bxmb134e3sqpr" path="res://src/ui_parts/display.gd" id="1_oib5g"]
 [ext_resource type="Texture2D" uid="uid://iglrqrqyg4kn" path="res://assets/icons/Reference.svg" id="4_2hiq7"]
-[ext_resource type="Texture2D" uid="uid://kkxyv1gyrjgj" path="res://assets/icons/Visuals.svg" id="4_n3qjt"]
 [ext_resource type="Texture2D" uid="uid://buire51l0mifg" path="res://assets/icons/Snap.svg" id="5_1k2cq"]
 [ext_resource type="Script" uid="uid://ynx3s1jc6bwq" path="res://src/ui_widgets/BetterButton.gd" id="6_3v3ve"]
 [ext_resource type="PackedScene" uid="uid://dad7fkhmsooc6" path="res://src/ui_widgets/number_edit.tscn" id="7_wrrfr"]
+[ext_resource type="Texture2D" uid="uid://dgoy38n5me7r0" path="res://assets/icons/Grid.svg" id="8_rll1m"]
 [ext_resource type="PackedScene" uid="uid://oltvrf01xrxl" path="res://src/ui_widgets/zoom_menu.tscn" id="8_xtdmn"]
 [ext_resource type="Script" uid="uid://b6pmlbnl76wmm" path="res://src/ui_parts/viewport.gd" id="9_4xrk7"]
+[ext_resource type="Texture2D" uid="uid://b7r171i82g3xl" path="res://assets/icons/Translate.svg" id="10_rll1m"]
 [ext_resource type="Shader" uid="uid://i2y5pyhcgra2" path="res://src/shaders/zoom_shader.gdshader" id="10_x7ybk"]
 [ext_resource type="Texture2D" uid="uid://c68og6bsqt0lb" path="res://assets/icons/backgrounds/Checkerboard.svg" id="11_1bm1s"]
 [ext_resource type="Script" uid="uid://dtplje5mhdmrj" path="res://src/ui_parts/display_texture.gd" id="12_qi23s"]
 [ext_resource type="Script" uid="uid://csqewpxr21ywy" path="res://src/ui_parts/handles_manager.gd" id="13_lwhwy"]
 [ext_resource type="Texture2D" uid="uid://8x628rb2bnep" path="res://assets/icons/TabSwitcher.svg" id="14_ryr8t"]
 [ext_resource type="Script" uid="uid://cm5033meho5vr" path="res://src/ui_widgets/camera.gd" id="15_hevpa"]
+[ext_resource type="Texture2D" uid="uid://d04w7h3k83w8u" path="res://assets/icons/element/svg.svg" id="15_kq8gf"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kqplg"]
 shader = ExtResource("10_x7ybk")
 shader_parameter/uv_scale = 1.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eujxa"]
-bg_color = Color(0.866667, 0.933333, 1, 0.133333)
-corner_radius_top_left = 5
-corner_radius_bottom_left = 5
 
 [node name="Display" type="VBoxContainer"]
 anchors_preset = 15
@@ -30,6 +27,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 0
 script = ExtResource("1_oib5g")
 
@@ -39,7 +38,6 @@ size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ViewportPanel"]
 layout_mode = 2
-theme_override_constants/separation = 0
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="ViewportPanel/VBoxContainer"]
 layout_mode = 2
@@ -51,7 +49,7 @@ unique_name_in_owner = true
 disable_3d = true
 handle_input_locally = false
 gui_snap_controls_to_pixels = false
-size = Vector2i(480, 823)
+size = Vector2i(480, 819)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 script = ExtResource("9_4xrk7")
@@ -107,14 +105,30 @@ custom_minimum_size = Vector2(132, 0)
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Visuals" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu"]
+[node name="show_grid" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu"]
 layout_mode = 2
-size_flags_horizontal = 2
-focus_mode = 0
-mouse_default_cursor_shape = 2
 theme_type_variation = &"IconButton"
-icon = ExtResource("4_n3qjt")
-icon_alignment = 1
+icon = ExtResource("8_rll1m")
+script = ExtResource("6_3v3ve")
+action = "view_show_grid"
+metadata/_custom_type_script = "uid://ynx3s1jc6bwq"
+
+[node name="show_handle" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu"]
+layout_mode = 2
+theme_type_variation = &"IconButton"
+icon = ExtResource("10_rll1m")
+script = ExtResource("6_3v3ve")
+action = "view_show_handles"
+metadata/_custom_type_script = "uid://ynx3s1jc6bwq"
+
+[node name="rasterized svg" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu"]
+visible = false
+layout_mode = 2
+theme_type_variation = &"IconButton"
+icon = ExtResource("15_kq8gf")
+script = ExtResource("6_3v3ve")
+action = "view_rasterized_svg"
+metadata/_custom_type_script = "uid://ynx3s1jc6bwq"
 
 [node name="Reference" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu"]
 layout_mode = 2
@@ -137,7 +151,6 @@ theme_type_variation = &"RightConnectedButton"
 toggle_mode = true
 icon = ExtResource("5_1k2cq")
 script = ExtResource("6_3v3ve")
-hover_pressed_stylebox = SubResource("StyleBoxFlat_eujxa")
 action = "toggle_snap"
 
 [node name="SnapNumberEdit" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Snapping" instance=ExtResource("7_wrrfr")]
@@ -204,7 +217,6 @@ theme_override_font_sizes/font_size = 14
 horizontal_alignment = 2
 
 [connection signal="size_changed" from="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="_on_size_changed"]
-[connection signal="pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Visuals" to="." method="_on_visuals_button_pressed"]
 [connection signal="pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Reference" to="." method="_on_reference_pressed"]
 [connection signal="toggled" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Snapping/SnapButton" to="." method="_on_snap_button_toggled"]
 [connection signal="value_changed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/LeftMenu/Snapping/SnapNumberEdit" to="." method="_on_snap_number_edit_value_changed"]

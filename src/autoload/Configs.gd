@@ -86,7 +86,7 @@ func reset_settings() -> void:
 	savedata = SaveData.new()
 	savedata.reset_to_default()
 	savedata.language = "en"
-	savedata.set_shortcut_panel_slots({ 0: "ui_undo", 1: "ui_redo", 2: "duplicate", 3: "save" })
+	savedata.set_shortcut_panel_slots({ 0: "ui_undo", 1: "ui_redo", 2: "duplicate", 3: "delete"})
 	savedata.set_palettes([Palette.new("Pure", Palette.Preset.PURE)])
 	save()
 	post_load()

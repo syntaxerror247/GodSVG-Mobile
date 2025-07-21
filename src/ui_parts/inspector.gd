@@ -14,7 +14,6 @@ func _ready() -> void:
 	full_rebuild()
 	add_button.pressed.connect(_on_add_button_pressed)
 
-
 func update_theme() -> void:
 	color = Color.TRANSPARENT
 	border_color = ThemeUtils.subtle_panel_border_color
